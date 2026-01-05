@@ -17,7 +17,7 @@ local getMatched = function(pattern, cursorRow, cursorCol)
         mStart = mStart + searchStart
         mEnd = mEnd + searchStart -- exclusive
         -- check if cursor in matched range
-        if cursorCol >= mStart and cursorCol < mEnd then
+        if cursorCol < mEnd then
             return { string.sub(originalLine, mStart, mEnd - 1), mStart, mEnd - 1 }
         end
         -- update searchStart
@@ -78,6 +78,8 @@ local operate = function(pattern, op)
         local newLine = line:sub(1, start - 1) .. newContent .. line:sub(finish + 1)
         -- set new line
         vim.api.nvim_set_current_line(newLine)
+        -- move cursor to end of the change
+        vim.api.nvim_win_set_cursor(0, { cursorRow, start + #tostring(newContent) - 2 })
         -- return true to stop other operation
         return true
     end
